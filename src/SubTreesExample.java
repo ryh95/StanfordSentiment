@@ -5,12 +5,11 @@ import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.trees.*;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Properties;
+import java.util.*;
 
 public class SubTreesExample {
 
-    private static void printSubTrees(Tree inputTree, String spacing, PrintWriter out) {
+    private static void printSubTrees(Tree inputTree,SortedSet<String> words_set) {
         if (inputTree.isLeaf()) {
             return;
         }
@@ -20,13 +19,13 @@ public class SubTreesExample {
         }
 //        attach labels
 //        System.out.print(spacing+inputTree.label()+"\t");
-
+        String phrase = "" ;
         for (Word w : words) {
-            out.print(w.word()+ " ");
+            phrase += w.word()+" ";
         }
-        out.println();
+        words_set.add(phrase);
         for (Tree subTree : inputTree.children()) {
-            printSubTrees(subTree, spacing + " ", out);
+            printSubTrees(subTree, words_set);
         }
     }
 
@@ -51,18 +50,29 @@ public class SubTreesExample {
         System.out.println();
         System.out.println("Write phrases to output.txt");
 
-//        Todo:remove duplicate phrases
-//        write phrases to the output file
+        SortedSet<String> words_set = new TreeSet<>(new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                int len_o1 = o1.length();
+                int len_o2 = o2.length();
+                return (len_o1>len_o2 ? -1 : (len_o1 == len_o2 ? o1.compareTo(o2): 1));
+            }
+        });
+//        Set<String> words_set = new HashSet<>();
+
+        printSubTrees(sentenceTree,words_set);
+
+//        write phrases to output file
         try(FileWriter fw = new FileWriter("output.txt", true);
             BufferedWriter bw = new BufferedWriter(fw);
             PrintWriter out = new PrintWriter(bw))
         {
-            printSubTrees(sentenceTree, "",out);
+            for (String word:words_set){
+                out.println(word);
+            }
         } catch (IOException e) {
             //exception handling left as an exercise for the reader
             e.printStackTrace();
         }
-        System.out.println("done");
-
     }
 }
