@@ -31,12 +31,20 @@ public class SubTreesExample {
 
     public static void main(String[] args) {
 
-        Properties props = new Properties();
-        props.setProperty("annotators", "tokenize,ssplit,parse");
-        props.setProperty("parse.binaryTrees", "true");
-        StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
+//        English version properties
+//        Properties props = new Properties();
+//        props.setProperty("annotators", "tokenize,ssplit,parse");
+//        props.setProperty("parse.binaryTrees", "true");
 
-        String text = "Yet the act is still charming here.";
+//        change the parse model
+//        props.setProperty("parse.model", "edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz");
+
+//        Chinese version properties
+        StanfordCoreNLP pipeline = new StanfordCoreNLP("CoreNLP-chinese.properties");
+
+//        Chinese version text
+//        if properties is English version use English text
+        String text = "这部电影有很好的评论。";
 
         Annotation annotation = new Annotation(text);
 
