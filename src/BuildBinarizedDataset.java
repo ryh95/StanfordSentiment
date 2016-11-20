@@ -135,7 +135,8 @@ public class BuildBinarizedDataset {
   public static void main(String[] args) {
     CollapseUnaryTransformer transformer = new CollapseUnaryTransformer();
 
-    String parserModel = "edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz";
+//    English use englishPCFG
+    String parserModel = "edu/stanford/nlp/models/lexparser/chineseFactored.ser.gz";
 
     String inputPath = null;
 
