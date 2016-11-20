@@ -3,13 +3,16 @@ import edu.stanford.nlp.ling.Word;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.trees.*;
+import edu.stanford.nlp.util.CoreMap;
 
 import java.io.*;
 import java.util.*;
 
-public class SubTreesExample {
+public class parsePhrases {
 
-    private static void printSubTrees(Tree inputTree,SortedSet<String> words_set) {
+    private static StanfordCoreNLP pipeline = new StanfordCoreNLP("CoreNLP-chinese.properties");
+
+    private static void getPhrases(Tree inputTree, SortedSet<String> words_set) {
         if (inputTree.isLeaf()) {
             return;
         }
@@ -25,40 +28,21 @@ public class SubTreesExample {
         }
         words_set.add(phrase);
         for (Tree subTree : inputTree.children()) {
-            printSubTrees(subTree, words_set);
+            getPhrases(subTree, words_set);
         }
     }
 
-    public static void main(String[] args) {
-
-//        English version properties
-//        Properties props = new Properties();
-//        props.setProperty("annotators", "tokenize,ssplit,parse");
-//        props.setProperty("parse.binaryTrees", "true");
-
-//        change the parse model
-//        props.setProperty("parse.model", "edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz");
-
-//        Chinese version properties
-        StanfordCoreNLP pipeline = new StanfordCoreNLP("CoreNLP-chinese.properties");
-
-//        Chinese version text
-//        if properties is English version use English text
-        String text = "这部电影有很好的评论。";
-
+    private static void parseAndSavePhrases(String text){
         Annotation annotation = new Annotation(text);
 
         pipeline.annotate(annotation);
 
-        Tree sentenceTree = annotation.get(CoreAnnotations.SentencesAnnotation.class).get(0).get(
-                TreeCoreAnnotations.BinarizedTreeAnnotation.class);
+        CoreMap sentence = annotation.get(CoreAnnotations.SentencesAnnotation.class).get(0);
+        Tree sentenceTree = sentence.get(TreeCoreAnnotations.BinarizedTreeAnnotation.class);
 
-        System.out.println("Penn tree:");
-        sentenceTree.pennPrint(System.out);
-        System.out.println();
         System.out.println("Write phrases to output.txt");
 
-        SortedSet<String> words_set = new TreeSet<>(new Comparator<String>() {
+        SortedSet<String> phrases_set = new TreeSet<>(new Comparator<String>() {
             @Override
             public int compare(String o1, String o2) {
                 int len_o1 = o1.length();
@@ -66,21 +50,37 @@ public class SubTreesExample {
                 return (len_o1>len_o2 ? -1 : (len_o1 == len_o2 ? o1.compareTo(o2): 1));
             }
         });
-//        Set<String> words_set = new HashSet<>();
 
-        printSubTrees(sentenceTree,words_set);
+        //save phrases of a sentence into phrases_set
+        getPhrases(sentenceTree,phrases_set);
 
-//        write phrases to output file
-        try(FileWriter fw = new FileWriter("output.txt", true);
+        //        write phrases to output file
+        try(FileWriter fw = new FileWriter("phrases.txt", true);
             BufferedWriter bw = new BufferedWriter(fw);
             PrintWriter out = new PrintWriter(bw))
         {
-            for (String word:words_set){
-                out.println(word);
+            for (String phrase:phrases_set){
+                out.println(phrase);
             }
         } catch (IOException e) {
             //exception handling left as an exercise for the reader
             e.printStackTrace();
         }
+    }
+
+    public static void main(String[] args) throws FileNotFoundException {
+
+        Scanner in = new Scanner(new File("sentences.txt"));
+
+        while (in.hasNext()) { // iterates each line in the file
+//            get a sentence
+            String line = in.nextLine();
+            // parse the sentence and save the phrases
+            parseAndSavePhrases(line);
+        }
+
+        in.close(); // don't forget to close resource leaks
+
+
     }
 }
