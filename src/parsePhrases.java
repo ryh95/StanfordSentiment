@@ -55,7 +55,7 @@ public class parsePhrases {
         getPhrases(sentenceTree,phrases_set);
 
         //        write phrases to output file
-        try(FileWriter fw = new FileWriter("phrases.txt", true);
+        try(FileWriter fw = new FileWriter("data/phrases.txt", true);
             BufferedWriter bw = new BufferedWriter(fw);
             PrintWriter out = new PrintWriter(bw))
         {
@@ -70,7 +70,7 @@ public class parsePhrases {
 
     public static void main(String[] args) throws FileNotFoundException {
 
-        Scanner in = new Scanner(new File("sentences.txt"));
+        Scanner in = new Scanner(new File("data/sentences.txt"));
 
         while (in.hasNext()) { // iterates each line in the file
 //            get a sentence

@@ -15,7 +15,7 @@ public class splitSentence {
 
     public static void main(String[] args) throws FileNotFoundException {
 
-        Scanner in = new Scanner(new File("input.txt"));
+        Scanner in = new Scanner(new File("data/input.txt"));
 
         while (in.hasNext()) {
 //            get a piece of news
@@ -37,7 +37,7 @@ public class splitSentence {
         for (CoreMap sentence: sentences){
 //            save all the sentence into sentences.txt file
 
-            try(FileWriter fw = new FileWriter("sentences.txt", true);
+            try(FileWriter fw = new FileWriter("data/sentences.txt", true);
                 BufferedWriter bw = new BufferedWriter(fw);
                 PrintWriter out = new PrintWriter(bw))
             {
