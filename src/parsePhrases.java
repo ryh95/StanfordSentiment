@@ -12,7 +12,7 @@ public class parsePhrases {
 
     private static StanfordCoreNLP pipeline = new StanfordCoreNLP("CoreNLP-chinese.properties");
 
-    private static void getPhrases(Tree inputTree, SortedSet<String> words_set) {
+    public static void getPhrases(Tree inputTree, SortedSet<String> words_set) {
         if (inputTree.isLeaf()) {
             return;
         }
@@ -32,7 +32,7 @@ public class parsePhrases {
         }
     }
 
-    private static void parseAndSavePhrases(String text){
+    public static SortedSet<String> parseAndSavePhrases(String text){
         Annotation annotation = new Annotation(text);
 
         pipeline.annotate(annotation);
@@ -40,7 +40,7 @@ public class parsePhrases {
         CoreMap sentence = annotation.get(CoreAnnotations.SentencesAnnotation.class).get(0);
         Tree sentenceTree = sentence.get(TreeCoreAnnotations.BinarizedTreeAnnotation.class);
 
-        System.out.println("Write phrases to output.txt");
+        System.out.println("Write phrases to SortedSet");
 
         SortedSet<String> phrases_set = new TreeSet<>(new Comparator<String>() {
             @Override
@@ -54,6 +54,11 @@ public class parsePhrases {
         //save phrases of a sentence into phrases_set
         getPhrases(sentenceTree,phrases_set);
 
+        return phrases_set;
+
+    }
+
+    private static void writeSetToFile(SortedSet<String> phrases_set){
         //        write phrases to output file
         try(FileWriter fw = new FileWriter("data/phrases.txt", true);
             BufferedWriter bw = new BufferedWriter(fw);
@@ -76,7 +81,7 @@ public class parsePhrases {
 //            get a sentence
             String line = in.nextLine();
             // parse the sentence and save the phrases
-            parseAndSavePhrases(line);
+            writeSetToFile(parseAndSavePhrases(line));
         }
 
         in.close(); // don't forget to close resource leaks

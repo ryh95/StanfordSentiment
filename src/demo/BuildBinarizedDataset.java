@@ -1,3 +1,5 @@
+package demo;
+
 import edu.stanford.nlp.io.IOUtils;
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.ling.CoreLabel;
@@ -132,16 +134,46 @@ public class BuildBinarizedDataset {
    * will be used to prelabel the sentences.  Any spans with given
    * labels will then be used to adjust those labels.
    */
-  public static void buildTrainData(String labeled_phrases) {
+  public static void main(String[] args) {
     CollapseUnaryTransformer transformer = new CollapseUnaryTransformer();
 
 //    English use englishPCFG
     String parserModel = "edu/stanford/nlp/models/lexparser/chineseFactored.ser.gz";
 
+    String inputPath = null;
+
+    String sentimentModelPath = null;
+    SentimentModel sentimentModel = null;
+
+    for (int argIndex = 0; argIndex < args.length; ) {
+      if (args[argIndex].equalsIgnoreCase("-input")) {
+        inputPath = args[argIndex + 1];
+        argIndex += 2;
+      } else if (args[argIndex].equalsIgnoreCase("-parserModel")) {
+        parserModel = args[argIndex + 1];
+        argIndex += 2;
+      } else if (args[argIndex].equalsIgnoreCase("-sentimentModel")) {
+        sentimentModelPath = args[argIndex + 1];
+        argIndex += 2;
+      } else {
+        log.info("Unknown argument " + args[argIndex]);
+        System.exit(2);
+      }
+    }
+
+    if (inputPath == null) {
+      throw new IllegalArgumentException("Must specify input file with -input");
+    }
+
     LexicalizedParser parser = LexicalizedParser.loadModel(parserModel);
     TreeBinarizer binarizer = TreeBinarizer.simpleTreeBinarizer(parser.getTLPParams().headFinder(), parser.treebankLanguagePack());
 
-    String[] chunks = labeled_phrases.split("\\n\\s*\\n+"); // need blank line to make a new chunk
+    if (sentimentModelPath != null) {
+      sentimentModel = SentimentModel.loadSerialized(sentimentModelPath);
+    }
+
+    String text = IOUtils.slurpFileNoExceptions(inputPath);
+    String[] chunks = text.split("\\n\\s*\\n+"); // need blank line to make a new chunk
 
     for (String chunk : chunks) {
       if (chunk.trim().isEmpty()) {
@@ -176,7 +208,14 @@ public class BuildBinarizedDataset {
 
       // if there is a sentiment model for use in prelabeling, we
       // label here and then use the user given labels to adjust
-      setUnknownLabels(collapsedUnary, mainLabel);
+      if (sentimentModel != null) {
+        Trees.convertToCoreLabels(collapsedUnary);
+        SentimentCostAndGradient scorer = new SentimentCostAndGradient(sentimentModel, null);
+        scorer.forwardPropagateTree(collapsedUnary);
+        setPredictedLabels(collapsedUnary);
+      } else {
+        setUnknownLabels(collapsedUnary, mainLabel);
+      }
 
       Trees.convertToCoreLabels(collapsedUnary);
       collapsedUnary.indexSpans();
