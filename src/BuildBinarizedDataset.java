@@ -1,4 +1,3 @@
-import edu.stanford.nlp.io.IOUtils;
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.ling.HasWord;
@@ -7,8 +6,6 @@ import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
 import edu.stanford.nlp.parser.lexparser.TreeBinarizer;
 import edu.stanford.nlp.process.DocumentPreprocessor;
 import edu.stanford.nlp.sentiment.CollapseUnaryTransformer;
-import edu.stanford.nlp.sentiment.SentimentCostAndGradient;
-import edu.stanford.nlp.sentiment.SentimentModel;
 import edu.stanford.nlp.trees.Tree;
 import edu.stanford.nlp.trees.Trees;
 import edu.stanford.nlp.util.Generics;
@@ -132,7 +129,7 @@ public class BuildBinarizedDataset {
    * will be used to prelabel the sentences.  Any spans with given
    * labels will then be used to adjust those labels.
    */
-  public static void buildTrainData(String labeled_phrases) {
+  public static Tree buildTrainData(String labeled_phrases) {
     CollapseUnaryTransformer transformer = new CollapseUnaryTransformer();
 
 //    English use englishPCFG
@@ -185,9 +182,11 @@ public class BuildBinarizedDataset {
         setSpanLabel(collapsedUnary, pairStringEntry.getKey(), pairStringEntry.getValue());
       }
 
-      System.out.println(collapsedUnary);
+//      System.out.println(collapsedUnary);
+      return collapsedUnary;
       //System.out.println();
     }
+    return null;
   } // end buildTrainData
 
 }

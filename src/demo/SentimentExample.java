@@ -24,11 +24,23 @@ public class SentimentExample {
     public static void main(String args[]){
         // creates a StanfordCoreNLP object, with POS tagging, lemmatization, NER, parsing, and coreference resolution
         Properties props = new Properties();
-        props.setProperty("annotators", "tokenize, ssplit,parse,sentiment");
+//        for English
+//        props.setProperty("annotators", "tokenize, ssplit,parse,sentiment");
+//        for Chinese
+        props.setProperty("annotators", "segment, ssplit,parse,sentiment");
+        props.setProperty("customAnnotatorClass.segment","edu.stanford.nlp.pipeline.ChineseSegmenterAnnotator");
+        props.setProperty("segment.model","edu/stanford/nlp/models/segmenter/chinese/pku.gz");
+        props.setProperty("segment.sighanCorporaDict","edu/stanford/nlp/models/segmenter/chinese");
+        props.setProperty("segment.serDictionary","edu/stanford/nlp/models/segmenter/chinese/dict-chris6.ser.gz");
+        props.setProperty("segment.sighanPostProcessing","true");
+        props.setProperty("ssplit.boundaryTokenRegex","[.]|[!?]+|[\\u3002]|[\\uFF01\\uFF1F]+");
+        props.setProperty("parse.model","edu/stanford/nlp/models/lexparser/chineseFactored.ser.gz");
+        props.setProperty("parse.binaryTrees","true");
+        props.setProperty("sentiment.model","C:\\Users\\ryh\\IdeaProjects\\StanfordSentiment\\data\\model.ser.gz");
         StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
 
         // read some text in the text variable
-        String text = "Yet the act is still charming here .";// Add your text here!
+        String text = "这真是好电影！";// Add your text here!
 
         // create an empty Annotation just with the given text
         Annotation annotation = new Annotation(text);

@@ -1,5 +1,4 @@
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -31,7 +30,16 @@ public class BuildTrainData {
                 labeled_phrases += value+" "+phrase+"\r\n";
             }
 
-            BuildBinarizedDataset.buildTrainData(labeled_phrases);
+            //        write phrases to output file
+            try(FileWriter fw = new FileWriter("data/train.txt", true);
+                BufferedWriter bw = new BufferedWriter(fw);
+                PrintWriter out = new PrintWriter(bw))
+            {
+                out.println(BuildBinarizedDataset.buildTrainData(labeled_phrases));
+            } catch (IOException e) {
+                //exception handling left as an exercise for the reader
+                e.printStackTrace();
+            }
 
         }
     }
