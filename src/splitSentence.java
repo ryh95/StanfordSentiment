@@ -20,6 +20,8 @@ public class splitSentence {
         while (in.hasNext()) {
 //            get a piece of news
             String line = in.nextLine();
+            if (line.equals(""))
+                continue;
             // split the news sentences
             splitSentences(line);
         }

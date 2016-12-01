@@ -36,7 +36,7 @@ public class SentimentExample {
         props.setProperty("ssplit.boundaryTokenRegex","[.]|[!?]+|[\\u3002]|[\\uFF01\\uFF1F]+");
         props.setProperty("parse.model","edu/stanford/nlp/models/lexparser/chineseFactored.ser.gz");
         props.setProperty("parse.binaryTrees","true");
-        props.setProperty("sentiment.model","C:\\Users\\ryh\\IdeaProjects\\StanfordSentiment\\data\\model.ser.gz");
+        props.setProperty("sentiment.model","C:\\Users\\ryh\\IdeaProjects\\StanfordSentiment\\model\\sentiment_Chinese.ser.gz");
         StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
 
         // read some text in the text variable
