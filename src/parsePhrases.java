@@ -35,7 +35,24 @@ public class parsePhrases {
     public static SortedSet<String> parseAndSavePhrases(String text){
         Annotation annotation = new Annotation(text);
 
-        pipeline.annotate(annotation);
+        try {
+            pipeline.annotate(annotation);
+        }catch (NullPointerException e){
+//            save the error sentence into file
+            try(FileWriter fw = new FileWriter("data/sentences_error.txt", true);
+                BufferedWriter bw = new BufferedWriter(fw);
+                PrintWriter out = new PrintWriter(bw))
+            {
+
+                out.println(text);
+
+            } catch (IOException e2) {
+                //exception handling left as an exercise for the reader
+                e2.printStackTrace();
+            }
+            return null;
+        }
+
 
         CoreMap sentence = annotation.get(CoreAnnotations.SentencesAnnotation.class).get(0);
         Tree sentenceTree = sentence.get(TreeCoreAnnotations.BinarizedTreeAnnotation.class);
@@ -70,12 +87,14 @@ public class parsePhrases {
         } catch (IOException e) {
             //exception handling left as an exercise for the reader
             e.printStackTrace();
+        } catch (NullPointerException e){
+            System.out.println("The set is empty!");
         }
     }
 
     public static void main(String[] args) throws FileNotFoundException {
 
-        Scanner in = new Scanner(new File("data/sentences.txt"));
+        Scanner in = new Scanner(new File("data/sentences_no_duplicate.txt"));
 
         while (in.hasNext()) { // iterates each line in the file
 //            get a sentence
