@@ -37,10 +37,13 @@ public class SentimentExample {
         props.setProperty("parse.model","edu/stanford/nlp/models/lexparser/chineseFactored.ser.gz");
         props.setProperty("parse.binaryTrees","true");
         props.setProperty("sentiment.model","C:\\Users\\ryh\\IdeaProjects\\StanfordSentiment\\model\\sentiment_Chinese.ser.gz");
+//        props.setProperty("sentiment.model","C:\\Users\\ryh\\IdeaProjects\\StanfordSentiment\\model\\model.ser.gz");
         StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
 
         // read some text in the text variable
-        String text = "这真是好电影！";// Add your text here!
+
+//        String text = "这个股票要跌";// Add your text here!
+        String text = "这是个好电影！";// Add your text here!
 
         // create an empty Annotation just with the given text
         Annotation annotation = new Annotation(text);
